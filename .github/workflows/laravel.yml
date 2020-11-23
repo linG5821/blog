@@ -12,7 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set visable
-      run: echo "VERSION=${{ (git describe --tags) }}" >> $GITHUB_ENV
+      run: echo "VERSION=$(git describe --tags)" >> $GITHUB_ENV
+    - name: ECHO visable
+      run: echo $GITHUB_ENV
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Composer update
