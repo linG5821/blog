@@ -31,11 +31,10 @@ jobs:
 #        registry: aidong-backend.tencentcloudcr.com
 #        repository: aidong-backend.tencentcloudcr.com/aidong/blog
 #        tag_with_ref: true
+    - name: set variable
+      run: echo "VERSION=$(git describe --tags)" >> $GITHUB_ENV
     - name: Build Image
-      run: |
-        echo $(git describe --tags)
-        echo "VERSION=$(git describe --tags)" >> $GITHUB_ENV
-        docker build -t aidong-backend.tencentcloudcr.com/aidong/blog:$VERSION .
+      run: docker build -t aidong-backend.tencentcloudcr.com/aidong/blog:$VERSION .
     - name: Login to tencnet docker image registry
       run: echo "${{ secrets.TENCENT_REGISTRY_PASSWORD }}" |  docker login aidong-backend.tencentcloudcr.com --username 100008616442 --password-stdin
     - name: Push Image to tencent docker image registry
