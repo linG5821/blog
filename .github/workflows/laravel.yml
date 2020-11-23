@@ -31,7 +31,7 @@ jobs:
 #        tag_with_ref: true
     - name: Build Image
       env:
-        VERSION: ${{ git describe --tags }}
+        VERSION: $(git describe --tags)
       run: docker build -t aidong-backend.tencentcloudcr.com/aidong/blog:$VERSION .
     - name: Login to tencnet docker image registry
       run: echo "${{ secrets.TENCENT_REGISTRY_PASSWORD }}" |  docker login aidong-backend.tencentcloudcr.com --username 100008616442 --password-stdin
