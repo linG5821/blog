@@ -12,8 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Define variables
-      run: |
-        echo ::set-env name=VERSION::$(git describe --tags)
+      run: echo "VERSION=$(git describe --tags)" >> $GITHUB_ENV
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Composer update
