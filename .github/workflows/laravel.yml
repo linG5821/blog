@@ -38,8 +38,8 @@ jobs:
       uses: docker/login-action@v1
       with:
         registry: aidong-backend.tencentcloudcr.com
-        username: ${{ secrets.TENCENT_REGISTRY_PASSWORD }}
-        password: ${{ secrets.TENCENT_REGISTRY_USERNAME }}
+        username: ${{ secrets.TENCENT_REGISTRY_USERNAME }}
+        password: ${{ secrets.TENCENT_REGISTRY_PASSWORD }}
     - name: Build And Push To Tencent Docker Hub
       uses: docker/build-push-action@v2
       with:
