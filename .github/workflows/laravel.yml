@@ -17,16 +17,11 @@ jobs:
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-    - name: Generate key
-      run: php artisan key:generate
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
-    - name: Create Database
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
-    - name: Execute tests (Unit and Feature tests) via PHPUnit
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: vendor/bin/phpunit
+    - name: Build Image
+      run: docker build -t aidong-backend.tencentcloudcr.com/aidong/blog .
+    - name: Login to tencnet docker image registry
+      run: echo "${{ secrets.TENCENT_REGISTRY_PASSWORD }}" |  docker login aidong-backend.tencentcloudcr.com --username 100008616442 --password-stdin
+    - name: Push Image to tencent docker image registry
+      run: docker push aidong-backend.tencentcloudcr.com/aidong/blog
