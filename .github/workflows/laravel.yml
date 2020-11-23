@@ -12,8 +12,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Define variables
-
-
       run: |
         echo ::set-env name=VERSION::$(git describe --tags)
     - name: Copy .env
