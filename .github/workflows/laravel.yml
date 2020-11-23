@@ -25,11 +25,11 @@ jobs:
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
     - name: Docker meta
-        id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1
-        with:
-          images: aidong-backend.tencentcloudcr.com/aidong/blog # list of Docker images to use as base name for tags
-          tag-sha: true
+      id: docker_meta
+      uses: crazy-max/ghaction-docker-meta@v1
+      with:
+        images: aidong-backend.tencentcloudcr.com/aidong/blog # list of Docker images to use as base name for tags
+        tag-sha: true
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
     - name: Set up Docker Buildx
