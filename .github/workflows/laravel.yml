@@ -11,8 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+#      with:
+#        # 这里默认为1 会导致 git describe --tags无法获取全历史记录时的tag
+#        fetch-depth: 0
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Composer update
@@ -23,19 +24,34 @@ jobs:
       run: php artisan package:discover
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
-#    - name: Push to Tencent Docker Hub
-#      uses: docker/build-push-action@v2
-#      with:
-#        username: ${{ secrets.TENCENT_REGISTRY_PASSWORD }}
-#        password: ${{ secrets.TENCENT_REGISTRY_USERNAME }}
-#        registry: aidong-backend.tencentcloudcr.com
-#        repository: aidong-backend.tencentcloudcr.com/aidong/blog
-#        tag_with_ref: true
-    - name: set variable
-      run: echo "VERSION=$(git describe --tags)" >> $GITHUB_ENV
-    - name: Build Image
-      run: docker build -t aidong-backend.tencentcloudcr.com/aidong/blog:$VERSION .
-    - name: Login to tencnet docker image registry
-      run: echo "${{ secrets.TENCENT_REGISTRY_PASSWORD }}" |  docker login aidong-backend.tencentcloudcr.com --username 100008616442 --password-stdin
-    - name: Push Image to tencent docker image registry
-      run: docker push aidong-backend.tencentcloudcr.com/aidong/blog:$VERSION
+    - name: Docker meta
+        id: docker_meta
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: aidong-backend.tencentcloudcr.com/aidong/blog # list of Docker images to use as base name for tags
+          tag-sha: true
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Login to Tencent DockerHub
+      uses: docker/login-action@v1
+      with:
+        registry: aidong-backend.tencentcloudcr.com
+        username: ${{ secrets.TENCENT_REGISTRY_PASSWORD }}
+        password: ${{ secrets.TENCENT_REGISTRY_USERNAME }}
+    - name: Build And Push To Tencent Docker Hub
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: ${{ steps.docker_meta.outputs.tags }}
+        labels: ${{ steps.docker_meta.outputs.labels }}
+# 自行设置 镜像tag的方式
+#    - name: set variable
+#      run: echo "VERSION=$(git describe --tags)" >> $GITHUB_ENV
+#    - name: Build Image
+#      run: docker build -t aidong-backend.tencentcloudcr.com/aidong/blog:$VERSION .
+#    - name: Login to tencnet docker image registry
+#      run: echo "${{ secrets.TENCENT_REGISTRY_PASSWORD }}" |  docker login aidong-backend.tencentcloudcr.com --username 100008616442 --password-stdin
+#    - name: Push Image to tencent docker image registry
+#      run: docker push aidong-backend.tencentcloudcr.com/aidong/blog:$VERSION
