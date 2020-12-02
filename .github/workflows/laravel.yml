@@ -8,11 +8,28 @@ on:
 jobs:
   default:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['7.2']
     steps:
-    - uses: actions/checkout@v2
-#      with:
-#        # 这里默认为1 会导致 git describe --tags无法获取全历史记录时的tag
-#        fetch-depth: 0
+    - name: Checkout
+      uses: actions/checkout@v2
+      #      with:
+      #        # 这里默认为1 会导致 git describe --tags无法获取全历史记录时的tag
+      #        fetch-depth: 0
+    - name: Setup PHP, with composer and extensions
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+    - name: Get composer cache directory
+      id: composer-cache
+      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - name: Cache composer dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+        restore-keys: ${{ runner.os }}-composer-
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Composer update
