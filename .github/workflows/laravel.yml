@@ -30,16 +30,16 @@ jobs:
         path: ${{ steps.composer-cache.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
         restore-keys: ${{ runner.os }}-composer-
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Composer update
       run: composer self-update --stable
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --optimize-autoloader
+    - name: Directory Permissions
+      run: |
+        mkdir -p bootstrap/cache storage/framework/sessions storage/framework/views
+        chmod -R 777 storage bootstrap/cache storage/framework/sessions storage/framework/views
     - name: Package Discover
       run: php artisan package:discover
-    - name: Directory Permissions
-      run: chmod -R 777 storage bootstrap/cache
 #     该种方式默认是从github拉取后直接BUILD直接推送 可以通过切换context来使用已经存在的拉取
     - name: Docker meta
       id: docker_meta
